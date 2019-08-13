@@ -1484,8 +1484,8 @@ def echo(resp_charset, req_charset):
 
     response = make_response()
     response.data = encoded
-    # response.content_type = "text/plain; charset=" + resp_charset
-    response.content_type = "text/plain"
+    response.content_type = "text/plain; charset=" + resp_charset
+    # response.content_type = "text/plain"
     return response
 
 
