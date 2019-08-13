@@ -1417,6 +1417,76 @@ def encoding():
     """
 
     return render_template("UTF-8-demo.txt")
+    
+    
+@app.route("/encoding/utf16")
+def encoding_utf16():
+    """Returns a UTF-16 encoded body.
+    ---
+    tags:
+      - Response formats
+    produces:
+      - text/html
+    responses:
+      200:
+        description: Encoded UTF-8 content.
+    """
+
+    return render_template("UTF-8-demo.txt")
+
+
+@app.route("/echo/<resp_charset>/<req_charset>", methods=["GET", "POST"])
+def echo(resp_charset, req_charset):
+    print("Request Content-Type: " + request.content_type)
+    print(type(request.data))
+    print(request.data)
+
+    print("Request charset: " + req_charset + " ; Response charset: " + resp_charset)
+
+    print("***** Request Encoding Inspector *****")
+    print("Decode as Request charset: " + req_charset)
+    print(request.data.decode(req_charset))
+    print("=====================================")
+    print("Decode as UTF-8")
+    try:
+        print(request.data.decode("utf-8"))
+    except:
+        print("Unable to decode as UTF-8")
+    print("=====================================")
+    print("Decode as UTF-16")
+    try:
+        print(request.data.decode("utf-16"))
+    except:
+        print("Unable to decode as UTF-16")
+    print("=====================================")
+    print("Decode as UTF-16BE")
+    try:
+        print(request.data.decode("utf-16BE"))
+    except:
+        print("Unable to decode as UTF-16BE")
+    print("=====================================")
+    print("***** End of Request Encoding Inspector *****")
+
+    json_obj = json.loads(request.data)
+    print(json_obj["Request"]["q"])
+
+    # data = json.dumps(request.json)
+    # print(data)
+    response_json = {
+        "Response": {
+            "content": json_obj["Request"]["q"],
+            "charset": resp_charset
+        }
+    }
+    encoded = json.dumps(response_json).encode(resp_charset)
+    print(type(encoded))
+    print(encoded)
+
+    response = make_response()
+    response.data = encoded
+    # response.content_type = "text/plain; charset=" + resp_charset
+    response.content_type = "text/plain"
+    return response
 
 
 @app.route("/bytes/<int:n>")
